@@ -38,6 +38,5 @@ module.exports = {
         allow: "/",
       },
     ],
-    additionalSitemaps: ["https://sasantha-portfolio.vercel.app/sitemap.xml"],
   },
 };
