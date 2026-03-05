@@ -1,15 +1,31 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ProjectCard } from "@/components/project-card";
-import { featuredProjects } from "@/content/projects";
 import { profile } from "@/content/profile";
+import { getBaseUrl } from "@/lib/base-url";
+import type { ProjectRecord } from "@/lib/types/project";
 
 export const metadata: Metadata = {
   description:
     "Full-stack web developer in Sri Lanka specializing in Next.js, React, ASP.NET, and modern business systems. View my portfolio and completed projects.",
 };
 
-export default function HomePage() {
+async function getHomeProjects() {
+  const response = await fetch(`${getBaseUrl()}/api/public/projects`, {
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    return [] as ProjectRecord[];
+  }
+
+  const data = (await response.json()) as { projects: ProjectRecord[] };
+  return data.projects.slice(0, 6);
+}
+
+export default async function HomePage() {
+  const homeProjects = await getHomeProjects();
+
   const personSchema = {
     "@context": "https://schema.org",
     "@type": "Person",
@@ -162,7 +178,7 @@ export default function HomePage() {
             id="projects-heading"
             className="text-2xl font-semibold text-slate-900"
           >
-            Featured Projects
+            Projects
           </h2>
           <Link
             href="/projects"
@@ -172,10 +188,13 @@ export default function HomePage() {
           </Link>
         </div>
         <div className="grid gap-5 sm:grid-cols-2">
-          {featuredProjects.map((project) => (
+          {homeProjects.map((project) => (
             <ProjectCard key={project.slug} project={project} />
           ))}
         </div>
+        {homeProjects.length === 0 ? (
+          <p className="text-sm text-slate-600">No projects found.</p>
+        ) : null}
       </section>
 
       <section

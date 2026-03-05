@@ -93,11 +93,6 @@ export default function RootLayout({
                   </Link>
                 </li>
                 <li>
-                  <Link className="nav-link" href="/projects">
-                    Projects
-                  </Link>
-                </li>
-                <li>
                   <Link className="nav-link" href="/contact">
                     Contact
                   </Link>
