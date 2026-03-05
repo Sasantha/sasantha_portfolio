@@ -1,4 +1,5 @@
 import "dotenv/config";
+import { randomUUID } from "node:crypto";
 import { getSupabaseAdmin } from "../lib/supabase-admin";
 
 const TABLE_CANDIDATES = ["Project", "projects"] as const;
@@ -88,7 +89,15 @@ async function main() {
     },
   ];
 
-  const { error: insertError } = await supabase.from(table).insert(seedRows);
+  const now = new Date().toISOString();
+  const rowsWithSystemFields = seedRows.map((row) => ({
+    id: randomUUID(),
+    ...row,
+    createdAt: now,
+    updatedAt: now,
+  }));
+
+  const { error: insertError } = await supabase.from(table).insert(rowsWithSystemFields);
   if (insertError) throw insertError;
 
   console.log("Seed data inserted.");

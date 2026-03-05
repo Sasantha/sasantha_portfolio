@@ -1,4 +1,5 @@
 import type { PostgrestError, PostgrestSingleResponse } from "@supabase/supabase-js";
+import { randomUUID } from "node:crypto";
 import type { ProjectRecord } from "@/lib/types/project";
 import type { NormalizedProjectInput } from "@/lib/validators/project";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
@@ -78,8 +79,16 @@ export async function slugExists(slug: string, excludeId?: string) {
 
 export async function createProject(input: NormalizedProjectInput) {
   const supabase = getSupabaseAdmin();
+  const now = new Date().toISOString();
+  const payload = {
+    id: randomUUID(),
+    ...input,
+    createdAt: now,
+    updatedAt: now,
+  };
+
   const { data, error } = await withProjectsTable<ProjectRecord | null>(async (table) => {
-    return supabase.from(table).insert(input).select("*").single();
+    return supabase.from(table).insert(payload).select("*").single();
   });
 
   return { data, error };
@@ -87,8 +96,13 @@ export async function createProject(input: NormalizedProjectInput) {
 
 export async function updateProject(id: string, input: NormalizedProjectInput) {
   const supabase = getSupabaseAdmin();
+  const payload = {
+    ...input,
+    updatedAt: new Date().toISOString(),
+  };
+
   const { data, error } = await withProjectsTable<ProjectRecord | null>(async (table) => {
-    return supabase.from(table).update(input).eq("id", id).select("*").maybeSingle();
+    return supabase.from(table).update(payload).eq("id", id).select("*").maybeSingle();
   });
 
   return { data, error };
