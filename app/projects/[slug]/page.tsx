@@ -8,6 +8,7 @@ import type { ProjectRecord } from "@/lib/types/project";
 type ProjectDetailPageProps = {
   params: Promise<{ slug: string }>;
 };
+export const dynamic = "force-dynamic";
 
 async function getProjectBySlug(slug: string) {
   const { data, error } = await getProjectBySlugFromRepo(slug);

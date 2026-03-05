@@ -3,6 +3,7 @@ import { listProjects } from "@/lib/project-repo";
 import type { ProjectView } from "@/lib/types/project";
 
 const siteUrl = "https://sasantha-portfolio.vercel.app";
+export const dynamic = "force-dynamic";
 
 async function getProjects() {
   const { data, error } = await listProjects("public");

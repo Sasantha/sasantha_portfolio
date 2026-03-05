@@ -9,6 +9,7 @@ export const metadata: Metadata = {
   description:
     "Full-stack web developer in Sri Lanka specializing in Next.js, React, ASP.NET, and modern business systems. View my portfolio and completed projects.",
 };
+export const dynamic = "force-dynamic";
 
 async function getHomeProjects() {
   const { data, error } = await listProjects("public");

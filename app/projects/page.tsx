@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   title: "Projects",
   description: "A collection of full-stack and frontend projects by Sasantha.",
 };
+export const dynamic = "force-dynamic";
 
 async function getProjects() {
   const { data, error } = await listProjects("public");
