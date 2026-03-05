@@ -1,8 +1,12 @@
-import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { ZodError } from "zod";
 import { isAdminRequest } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import {
+  deleteProject,
+  getProjectById,
+  slugExists,
+  updateProject,
+} from "@/lib/project-repo";
 import { normalizeProjectInput } from "@/lib/validators/project";
 
 type Params = {
@@ -17,7 +21,11 @@ export async function GET(request: NextRequest, { params }: Params) {
 
   const { id } = await params;
 
-  const project = await prisma.project.findUnique({ where: { id } });
+  const { data: project, error } = await getProjectById(id);
+  if (error) {
+    return NextResponse.json({ ok: false, error: "Failed to load project" }, { status: 500 });
+  }
+
   if (!project) {
     return NextResponse.json({ ok: false, error: "Project not found" }, { status: 404 });
   }
@@ -37,19 +45,22 @@ export async function PUT(request: NextRequest, { params }: Params) {
     const body = await request.json();
     const input = normalizeProjectInput(body);
 
-    const existing = await prisma.project.findUnique({
-      where: { slug: input.slug },
-      select: { id: true },
-    });
+    const { exists, error: slugError } = await slugExists(input.slug, id);
+    if (slugError) {
+      return NextResponse.json({ ok: false, error: "Failed to validate slug" }, { status: 500 });
+    }
 
-    if (existing && existing.id !== id) {
+    if (exists) {
       return NextResponse.json({ ok: false, error: "Slug already exists" }, { status: 409 });
     }
 
-    const project = await prisma.project.update({
-      where: { id },
-      data: input,
-    });
+    const { data: project, error: updateError } = await updateProject(id, input);
+    if (updateError) {
+      return NextResponse.json({ ok: false, error: "Failed to update project" }, { status: 500 });
+    }
+    if (!project) {
+      return NextResponse.json({ ok: false, error: "Project not found" }, { status: 404 });
+    }
 
     return NextResponse.json({ ok: true, project });
   } catch (error) {
@@ -59,11 +70,6 @@ export async function PUT(request: NextRequest, { params }: Params) {
         { status: 400 },
       );
     }
-
-    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
-      return NextResponse.json({ ok: false, error: "Project not found" }, { status: 404 });
-    }
-
     return NextResponse.json({ ok: false, error: "Failed to update project" }, { status: 500 });
   }
 }
@@ -76,14 +82,18 @@ export async function DELETE(request: NextRequest, { params }: Params) {
 
   const { id } = await params;
 
-  try {
-    await prisma.project.delete({ where: { id } });
-    return NextResponse.json({ ok: true });
-  } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
-      return NextResponse.json({ ok: false, error: "Project not found" }, { status: 404 });
-    }
-
+  const { data: existing, error: getError } = await getProjectById(id);
+  if (getError) {
     return NextResponse.json({ ok: false, error: "Failed to delete project" }, { status: 500 });
   }
+  if (!existing) {
+    return NextResponse.json({ ok: false, error: "Project not found" }, { status: 404 });
+  }
+
+  const { error } = await deleteProject(id);
+  if (error) {
+    return NextResponse.json({ ok: false, error: "Failed to delete project" }, { status: 500 });
+  }
+
+  return NextResponse.json({ ok: true });
 }

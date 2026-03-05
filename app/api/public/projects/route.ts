@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { listProjects } from "@/lib/project-repo";
 
 export async function GET() {
-  const projects = await prisma.project.findMany({
-    orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
-  });
+  const { data, error } = await listProjects("public");
+  if (error) {
+    return NextResponse.json({ ok: false, error: "Failed to load projects" }, { status: 500 });
+  }
 
-  return NextResponse.json({ ok: true, projects });
+  return NextResponse.json({ ok: true, projects: data });
 }

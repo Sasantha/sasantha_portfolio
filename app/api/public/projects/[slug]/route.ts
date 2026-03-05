@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getProjectBySlug } from "@/lib/project-repo";
 
 type Params = {
   params: Promise<{ slug: string }>;
@@ -8,9 +8,10 @@ type Params = {
 export async function GET(_: Request, { params }: Params) {
   const { slug } = await params;
 
-  const project = await prisma.project.findUnique({
-    where: { slug },
-  });
+  const { data: project, error } = await getProjectBySlug(slug);
+  if (error) {
+    return NextResponse.json({ ok: false, error: "Failed to load project" }, { status: 500 });
+  }
 
   if (!project) {
     return NextResponse.json({ ok: false, error: "Project not found" }, { status: 404 });
