@@ -1,14 +1,26 @@
+import Image from "next/image";
 import Link from "next/link";
-import type { Project } from "@/content/projects";
+import type { ProjectView } from "@/lib/types/project";
 
 type ProjectCardProps = {
-  project: Project;
+  project: ProjectView;
 };
 
 export function ProjectCard({ project }: ProjectCardProps) {
+  const coverImage = project.coverImageUrl || "/placeholder.svg";
+
   return (
     <article className="flex h-full flex-col justify-between border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
       <div className="space-y-4">
+        <div className="overflow-hidden border border-slate-200 bg-slate-100">
+          <Image
+            src={coverImage}
+            alt={`${project.title} cover image`}
+            width={800}
+            height={420}
+            className="h-44 w-full object-cover"
+          />
+        </div>
         <h3 className="text-xl font-semibold text-slate-900">
           <Link href={`/projects/${project.slug}`} className="hover:underline">
             {project.title}
@@ -30,22 +42,26 @@ export function ProjectCard({ project }: ProjectCardProps) {
         </div>
       </div>
       <div className="mt-6 flex items-center gap-4 text-sm font-medium">
-        <a
-          href={project.liveUrl}
-          target="_blank"
-          rel="noreferrer"
-          className="text-slate-900 underline decoration-slate-300 underline-offset-4 hover:decoration-slate-900"
-        >
-          Live
-        </a>
-        <a
-          href={project.repoUrl}
-          target="_blank"
-          rel="noreferrer"
-          className="text-slate-900 underline decoration-slate-300 underline-offset-4 hover:decoration-slate-900"
-        >
-          Repo
-        </a>
+        {project.liveUrl ? (
+          <a
+            href={project.liveUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="text-slate-900 underline decoration-slate-300 underline-offset-4 hover:decoration-slate-900"
+          >
+            Live
+          </a>
+        ) : null}
+        {project.repoUrl ? (
+          <a
+            href={project.repoUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="text-slate-900 underline decoration-slate-300 underline-offset-4 hover:decoration-slate-900"
+          >
+            Repo
+          </a>
+        ) : null}
       </div>
     </article>
   );

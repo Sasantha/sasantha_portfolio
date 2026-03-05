@@ -1,10 +1,25 @@
 import type { MetadataRoute } from "next";
-import { projects } from "@/content/projects";
+import { getBaseUrl } from "@/lib/base-url";
+import type { ProjectView } from "@/lib/types/project";
 
 const siteUrl = "https://sasantha-portfolio.vercel.app";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+async function getProjects() {
+  const response = await fetch(`${getBaseUrl()}/api/public/projects`, {
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    return [] as ProjectView[];
+  }
+
+  const data = (await response.json()) as { projects: ProjectView[] };
+  return data.projects;
+}
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
+  const projects = await getProjects();
 
   const staticRoutes: MetadataRoute.Sitemap = [
     {

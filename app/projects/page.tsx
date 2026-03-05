@@ -1,13 +1,29 @@
 import type { Metadata } from "next";
 import { ProjectCard } from "@/components/project-card";
-import { projects } from "@/content/projects";
+import { getBaseUrl } from "@/lib/base-url";
+import type { ProjectRecord } from "@/lib/types/project";
 
 export const metadata: Metadata = {
   title: "Projects",
   description: "A collection of full-stack and frontend projects by Sasantha.",
 };
 
-export default function ProjectsPage() {
+async function getProjects() {
+  const response = await fetch(`${getBaseUrl()}/api/public/projects`, {
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    return [] as ProjectRecord[];
+  }
+
+  const data = (await response.json()) as { projects: ProjectRecord[] };
+  return data.projects;
+}
+
+export default async function ProjectsPage() {
+  const projects = await getProjects();
+
   return (
     <section aria-labelledby="projects-page-heading" className="space-y-8">
       <header className="space-y-3">
@@ -25,6 +41,9 @@ export default function ProjectsPage() {
           <ProjectCard key={project.slug} project={project} />
         ))}
       </div>
+      {projects.length === 0 ? (
+        <p className="text-sm text-slate-600">No projects found.</p>
+      ) : null}
     </section>
   );
 }

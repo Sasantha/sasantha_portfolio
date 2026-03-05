@@ -1,90 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sasantha Portfolio
 
-# Sasantha Perera – Portfolio Website
+Next.js App Router portfolio with a PostgreSQL-backed Projects CMS (Supabase + Prisma) and protected `/admin` dashboard.
 
-Modern, high-performance developer portfolio built with Next.js and deployed on Vercel.
+## Environment Variables
 
-## Overview
+Create `.env.local` with:
 
-This project represents my professional portfolio as a Full-Stack Software Engineer.  
-It showcases selected projects, technical skills, and real-world business solutions I have developed for clients and product concepts.
-
-The focus of this portfolio is:
-
-- Clean architecture
-- Performance optimization
-- Scalable structure
-- Business-oriented system design
-- Professional UI/UX presentation
-
-## Tech Stack
-
-- **Framework:** Next.js (App Router)
-- **Language:** TypeScript
-- **Styling:** Tailwind CSS
-- **Deployment:** Vercel
-- **Version Control:** Git + GitHub
-
-## Project Structure
-
-/app → Routes & Pages
-/components → Reusable UI components
-/content → Portfolio data (projects, profile info)
-/public → Static assets
-/styles → Global styles
-
-## ✨ Features
-
-- Fully responsive modern UI
-- Dynamic project pages (`/projects/[slug]`)
-- Structured portfolio content management
-- SEO-ready metadata configuration
-- Optimized production build
-- Clean component architecture
-
----
-
-## 📌 Featured Projects
-
-- Mark-Shell Pvt Ltd – Corporate B2B Website
-- Laboura Marketplace Platform
-- Gadget Hub Full-Stack System
-- VetCare360 MVC Application
-- FitZone Gym Management System
-- Pharma E-commerce Platform
-- LuxeVista Mobile App
-
-## Getting Started
-
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```env
+DATABASE_URL=postgresql://...pooled-connection...
+DIRECT_URL=postgresql://...direct-connection...
+ADMIN_PASSWORD=your_admin_password
+AUTH_SECRET=long_random_secret
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Database Setup
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npx prisma migrate dev
+npm run db:seed
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+If your managed Postgres provider blocks shadow DB creation in `migrate dev`, use:
 
-## Learn More
+```bash
+npx prisma db push
+npm run db:seed
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Run Locally
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm i
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Admin CMS
 
-## Deploy on Vercel
+- `/admin/login` for password login
+- `/admin` dashboard list
+- `/admin/projects/new` create
+- `/admin/projects/[id]/edit` edit/delete
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Vercel Environment Setup
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Set these variables in Vercel Project Settings:
+
+- `DATABASE_URL` -> Supabase pooled connection string (runtime)
+- `DIRECT_URL` -> Supabase direct connection string (migrations/CLI)
+- `ADMIN_PASSWORD` -> admin login password
+- `AUTH_SECRET` -> long random secret used for signed cookie token
+- `NEXT_PUBLIC_SITE_URL` -> production URL (`https://sasantha-portfolio.vercel.app`)

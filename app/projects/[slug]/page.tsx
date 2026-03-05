@@ -1,25 +1,38 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getProjectBySlug, projects } from "@/content/projects";
+import { getBaseUrl } from "@/lib/base-url";
+import type { ProjectRecord } from "@/lib/types/project";
 
 type ProjectDetailPageProps = {
   params: Promise<{ slug: string }>;
 };
 
-export async function generateStaticParams() {
-  return projects.map((project) => ({ slug: project.slug }));
+async function getProjectBySlug(slug: string) {
+  const response = await fetch(`${getBaseUrl()}/api/public/projects/${slug}`, {
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    return null;
+  }
+
+  const data = (await response.json()) as { project: ProjectRecord };
+  return data.project;
 }
 
 export async function generateMetadata({
   params,
 }: ProjectDetailPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const project = getProjectBySlug(slug);
+  const project = await getProjectBySlug(slug);
 
   if (!project) {
     return { title: "Project Not Found" };
   }
+
+  const coverImage = project.coverImageUrl || "/placeholder.svg";
 
   return {
     title: project.title,
@@ -29,6 +42,7 @@ export async function generateMetadata({
       description: project.summary,
       type: "article",
       url: `https://sasantha-portfolio.vercel.app/projects/${project.slug}`,
+      images: [coverImage],
     },
   };
 }
@@ -37,7 +51,7 @@ export default async function ProjectDetailPage({
   params,
 }: ProjectDetailPageProps) {
   const { slug } = await params;
-  const project = getProjectBySlug(slug);
+  const project = await getProjectBySlug(slug);
 
   if (!project) {
     notFound();
@@ -49,6 +63,15 @@ export default async function ProjectDetailPage({
         <p className="text-sm font-semibold tracking-wide text-slate-600">
           Project Detail
         </p>
+        <div className="overflow-hidden border border-slate-200 bg-slate-100">
+          <Image
+            src={project.coverImageUrl || "/placeholder.svg"}
+            alt={`${project.title} cover image`}
+            width={1200}
+            height={630}
+            className="h-auto w-full object-cover"
+          />
+        </div>
         <h1 className="text-3xl font-semibold text-slate-900 sm:text-4xl">
           {project.title}
         </h1>
@@ -82,22 +105,26 @@ export default async function ProjectDetailPage({
       </section>
 
       <section aria-label="Project links" className="flex flex-wrap gap-3">
-        <a
-          href={project.liveUrl}
-          target="_blank"
-          rel="noreferrer"
-          className="border border-slate-900 bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
-        >
-          View Live
-        </a>
-        <a
-          href={project.repoUrl}
-          target="_blank"
-          rel="noreferrer"
-          className="border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-900 transition hover:border-slate-900"
-        >
-          View Repository
-        </a>
+        {project.liveUrl ? (
+          <a
+            href={project.liveUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="border border-slate-900 bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+          >
+            View Live
+          </a>
+        ) : null}
+        {project.repoUrl ? (
+          <a
+            href={project.repoUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-900 transition hover:border-slate-900"
+          >
+            View Repository
+          </a>
+        ) : null}
         <Link
           href="/projects"
           className="border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-900 hover:text-slate-900"
