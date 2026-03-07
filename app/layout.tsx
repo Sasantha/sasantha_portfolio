@@ -1,4 +1,5 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/react";
 import { Space_Grotesk } from "next/font/google";
 import Link from "next/link";
 import "./globals.css";
@@ -112,6 +113,7 @@ export default function RootLayout({
           <footer className="border-t border-slate-200 py-6 text-center text-sm text-slate-500">
             <p>(c) {new Date().getFullYear()} {profile.name}. Built with Next.js and Tailwind.</p>
           </footer>
+          <Analytics />
         </div>
       </body>
     </html>
