@@ -1,8 +1,8 @@
-import type { MetadataRoute } from "next";
+﻿import type { MetadataRoute } from "next";
 import { listProjects } from "@/lib/project-repo";
 import type { ProjectView } from "@/lib/types/project";
 
-const siteUrl = "https://sasantha-portfolio.vercel.app";
+const siteUrl = "https://spperera.me";
 export const dynamic = "force-dynamic";
 
 async function getProjects() {
@@ -34,7 +34,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: `${siteUrl}/contact`,
       lastModified: now,
       changeFrequency: "monthly",
-      priority: 0.6,
+      priority: 0.8,
     },
   ];
 

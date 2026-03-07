@@ -6,32 +6,40 @@ import "./globals.css";
 import { profile } from "@/content/profile";
 import { ThemeToggle } from "@/components/theme-toggle";
 
+const siteUrl = "https://spperera.me";
+
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://sasantha-portfolio.vercel.app"),
+  metadataBase: new URL(siteUrl),
   title: {
-    default: "Sasantha Perera - Full Stack Web Developer in Asia | Next.js & ASP.NET",
+    default: "Sasantha Perera | Full-Stack Web Developer in Sri Lanka",
     template: "%s | Sasantha Perera",
   },
   description:
-    "Full-stack web developer in Sri Lanka specializing in Next.js, React, ASP.NET, and modern business systems. View my portfolio and completed projects.",
+    "Sasantha Perera is a modern full-stack web developer in Sri Lanka helping businesses launch high-converting websites, eCommerce platforms, and custom web applications with Next.js and ASP.NET.",
   keywords: [
-    "Web Developer Sri Lanka",
-    "Freelance Web Developer Sri Lanka",
-    "Next.js Developer Sri Lanka",
-    "ASP.NET Developer Sri Lanka",
-    "Full Stack Developer Sri Lanka",
-    "Corporate Website Developer",
-    "Piliyandala Web Developer",
+    "Business Website",
+    "Web developer in sri lanka",
+    "modern web developer",
+    "full stack developer",
+    "sri lanka web developer",
+    "ecommerce website",
+    "Perera",
+    "Next.js developer Sri Lanka",
+    "Full stack developer Piliyandala",
+    "Full stack web developer Piliyandala",
+    "Freelance web developer Sri Lanka",
+    "Custom website development Sri Lanka",
   ],
-  authors: [{ name: profile.name, url: "https://sasantha-portfolio.vercel.app" }],
+  authors: [{ name: profile.name, url: siteUrl }],
   creator: profile.name,
+  publisher: profile.name,
   alternates: {
-    canonical: "https://sasantha-portfolio.vercel.app",
+    canonical: siteUrl,
   },
   robots: {
     index: true,
@@ -40,19 +48,21 @@ export const metadata: Metadata = {
       index: true,
       follow: true,
       "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
     },
   },
   verification: {
     google: "OZxMa6-p35bxHCItQpB6eEenGXy9pVxczKarXWXh7aU",
   },
   openGraph: {
-    title: "Sasantha Perera - Full Stack Web Developer",
+    title: "Sasantha Perera | Full-Stack Web Developer in Sri Lanka",
     description:
-      "Portfolio of Sasantha Perera, full-stack developer building business websites, APIs, and SaaS systems.",
+      "Hire Sasantha Perera for business websites, eCommerce development, and modern full-stack web apps in Sri Lanka.",
     type: "website",
     locale: "en_US",
-    url: "https://sasantha-portfolio.vercel.app",
-    siteName: "Sasantha Portfolio",
+    url: siteUrl,
+    siteName: "spperera.me",
     images: [
       {
         url: "/og.png",
@@ -64,8 +74,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Sasantha Perera - Full Stack Web Developer",
-    description: "Portfolio of full-stack web developer Sasantha Perera.",
+    title: "Sasantha Perera | Full-Stack Web Developer in Sri Lanka",
+    description:
+      "Modern web developer in Sri Lanka for business websites, ecommerce websites, and full-stack app development.",
     images: ["/og.png"],
   },
 };
@@ -75,6 +86,84 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const websiteJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Sasantha Perera Portfolio",
+    url: siteUrl,
+    inLanguage: "en",
+    potentialAction: {
+      "@type": "SearchAction",
+      target: `${siteUrl}/projects?query={search_term_string}`,
+      "query-input": "required name=search_term_string",
+    },
+  };
+
+  const personJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: profile.name,
+    url: siteUrl,
+    image: `${siteUrl}/og.png`,
+    jobTitle: "Full-Stack Web Developer",
+    description:
+      "Full-stack web developer in Sri Lanka specializing in business websites, ecommerce platforms, and modern web applications.",
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Piliyandala",
+      addressCountry: "LK",
+    },
+    sameAs: [
+      profile.socials.github,
+      profile.socials.linkedin,
+      profile.socials.upwork,
+      profile.socials.freelancer,
+    ],
+    knowsAbout: [
+      "Next.js",
+      "React",
+      "Node.js",
+      "ASP.NET",
+      "Ecommerce Website Development",
+      "Business Website Development",
+      "Full Stack Development",
+    ],
+    makesOffer: {
+      "@type": "Offer",
+      itemOffered: {
+        "@type": "Service",
+        name: "Freelance Web Development Services",
+        serviceType: "Business Website and Ecommerce Development",
+      },
+      areaServed: "Sri Lanka",
+      availability: "https://schema.org/InStock",
+      url: `${siteUrl}/contact`,
+    },
+  };
+
+  const serviceJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    name: "Sasantha Perera Web Development",
+    url: siteUrl,
+    image: `${siteUrl}/og.png`,
+    areaServed: "Sri Lanka",
+    founder: profile.name,
+    description:
+      "Modern full-stack web development for business websites, ecommerce stores, and custom web apps.",
+    serviceType: [
+      "Business Website Development",
+      "Ecommerce Website Development",
+      "Full-Stack Web Application Development",
+    ],
+    knowsAbout: ["Next.js", "React", "Node.js", "ASP.NET", "TypeScript"],
+    potentialAction: {
+      "@type": "ContactAction",
+      target: `${siteUrl}/contact`,
+      name: "Request a project quote",
+    },
+  };
+
   return (
     <html lang="en">
       <body className={`${spaceGrotesk.variable} antialiased`}>
@@ -115,6 +204,19 @@ export default function RootLayout({
           </footer>
           <Analytics />
         </div>
+
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceJsonLd) }}
+        />
       </body>
     </html>
   );

@@ -1,6 +1,15 @@
-# *
+﻿# Global rules
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /api/admin/
 
-# Sitemaps
-Sitemap: https://sasantha-portfolio.vercel.app/sitemap.xml
+# Google-specific guidance
+User-agent: Googlebot
+Allow: /
+Disallow: /admin
+Disallow: /api/admin/
+
+# Canonical sitemap location
+Sitemap: https://spperera.me/sitemap.xml
+Host: spperera.me
